@@ -14,10 +14,11 @@ describe('App.ClickCounter', () => {
             // 준비
             // ... beforeEach로 생략.
             // 실행
+            const initialValue = counter.getValue();
             counter.increase();
 
             // 단언
-            expect(counter.getValue()).toBe(1);
+            expect(counter.getValue()).toBe(initialValue+1);
         })
     })
 })
