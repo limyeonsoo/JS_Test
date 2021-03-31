@@ -148,6 +148,67 @@ App.Person = (function () {
 
 - 단순히 0을 반환하는 것이 아니라, value의 값을 반환해서 그 값이 toBe 되는지 확인 하는 것.
 
+### 테스트 기본 꼴
+
+```jsx
+describe('설명', () => {
+    it('설명', () => {
+        // 준비
+        
+
+        // 실행
+
+        // 단언
+    })
+})
+```
+
+### beforeEach
+
+it 함수 호출 직전에 실행되는 자스민 함수.
+
+→ 중복 코드를 it이 실행되기 전에 일괄 처리 할 수 있다.
+
+```jsx
+describe(() => {
+		beforeEach(() => {   //   (1)
+		afterEach(() => {    //   (3)
+		it(() = {            //   (2)
+});
+```
+
+# View에 대한 Test
+
+- clickCounter는 객체를 만들어 parameter로 전달 받을 수 있다.
+- 데이터를 출력할 DOM도 만들어서 전달 받을 수 있다.
+
+⇒ 모듈 주입
+
+하나의 기능 단위로 모듈을 분리 할 수 있다 : 단일 책임 원칙.
+
+```jsx
+beforeEach(() => {
+    clickCounter = App.ClickCounter();
+    updateEl = document.createElement('span');
+    view = App.ClickCounterView(clickCounter, updateEl);
+})
+```
+
+### → 의존성이 주입 되었는지에 대한 확인도 필요하다.
+
+< Jasmine 프레임워크 >
+
+`expect(function() {throw new Error()}).toThrowError()` : 에러를 던지는 함수로 에러 여부 확인 가능.
+
+## increase() 가 실행 된 후, updateView()가 실행되는 로직은?
+
+1. increase()
+2. updateView()
+
+2가지로 나눌 수 있다.
+
+Test도 2가지로 나누어 주고, 각각이 실행되었는지 확인할 필요도 있다.
+
 # 테스트 더블
 
 단위 테스트 패턴으로, 테스트하기 곤란한 컴포넌트를 대체하여 테스트 하는 것.
@@ -178,3 +239,152 @@ ex) bar() 함수가 MyApp.foo() 함수를 실행하는지 검증할 때.
 3. spy하고 있는 함수가 실행되었는지 체크한다.
 
     `expect(MyApp.foo).toHaveBeenCalled()`
+
+```jsx
+describe('increase 실행 후 updateView를 실행하는 2가지 동작', () => {
+    // 테스트 더블 사용.
+    // 사용 이유 실행이 되었는지 확인할 필요가 있음.
+    it('increase 실행', () => {
+        spyOn(clickCounter, 'increase')
+        view.increaseAndUpdateView()
+        expect(clickCounter.increase).toHaveBeenCalled()
+    });
+    it('upateView 실행', () => {
+        spyOn(view, 'updateView')
+        view.increaseAndUpdateView()
+        expect(view.updateView).toHaveBeenCalled();
+    })
+})
+```
+
+![JS_Test%20&%20TDD%2026d3301adf654c1fa8964ab7897f1d05/Untitled%204.png](JS_Test%20&%20TDD%2026d3301adf654c1fa8964ab7897f1d05/Untitled%204.png)
+
+# Click Event에 대한 Test
+
+// 클릭 이벤트 핸들러를 바인딩할 돔 엘리먼트를 주입.
+
+```jsx
+beforeEach(() => {
+    clickCounter = App.ClickCounter();
+    updateEl = document.createElement('span');
+    **triggerEl = document.createElement('button');**
+    view = App.ClickCounterView(clickCounter, {updateEl, triggerEl});
+})
+
+it('Click Event 가 발생하면 increase and updateView 를 실행',()=>{
+    // 준비 : 스파이 심기
+    spyOn(view, 'increaseAndUpdateView');
+
+    // click ??
+    // 클릭 이벤트 핸들러를 바인딩할 돔 엘리먼트를 주입.
+    triggerEl.click();
+
+    // 단언
+    expect(view.increaseAndUpdateView).toHaveBeenCalled();
+})
+```
+
+# 기존 vs 개선
+
+```jsx
+<html>
+    <body>
+        <span id="counter-display"></span>
+        <button onclick="counter++; countDisplay()">증가</button>
+        <script>
+            var counter = 0;
+            var el = document.getElementById('counter-display');
+            function countDisplay(){
+                el.innerHTML = counter;
+            };
+        </script>
+    </body>
+</html>
+```
+
+```jsx
+<html>
+    <body>
+        <span id="counter-display"></span>
+        <button id="btn-increase">Increase</button>
+
+        <script src="ClickCounter.js"></script>
+        <script src="ClickCounterView.js"></script>
+
+        <script>
+            (() => {
+                const clickCounter = App.ClickCounter();
+                const updateEl = document.getElementById('counter-display');
+                const triggerEl = document.getElementById('btn-increase');
+                const view = App.ClickCounterView(clickCounter, {updateEl, triggerEl});
+                view.updateView();
+            })();
+        </script>
+    </body>
+</html>
+```
+
+# 덧셈 뺄셈 +2덧셈
+
+```jsx
+<script>
+    (() => {
+        const data = { value : 0 };
+        const counterDsc = App.ClickCounter(data).setCountFn(v => v - 1);
+        const counterInc = App.ClickCounter(data).setCountFn(v => v + 1);
+        
+        const updateEl = document.getElementById('counter-display');
+
+        const btnInc = document.getElementById('btn-increase');
+        const btnDsc = document.getElementById('btn-decrease');
+
+        const dscCounterView = App.ClickCounterView(counterDsc, {updateEl, triggerEl : btnDsc});
+        const incCounterView = App.ClickCounterView(counterInc, {updateEl, triggerEl : btnInc});
+
+        incCounterView.updateView(); //둘중 하나
+    })();
+</script>
+```
+
+![JS_Test%20&%20TDD%2026d3301adf654c1fa8964ab7897f1d05/Untitled%205.png](JS_Test%20&%20TDD%2026d3301adf654c1fa8964ab7897f1d05/Untitled%205.png)
+
+< clickCounter >
+
+1. 데이터를 전달한다.
+
+    감소 카운터 / 증가 카운터 모두 같은 데이터를 사용하기 위해 객체 형태로 전달해준다.
+
+2. setCountFn(fn)을 이용하여 count() 함수를 오버라이딩 하여 data변화율을 재정의 해준다.
+3. setCountFn에서 반환한 this에 체이닝 하여 재정의된 count()를 바로 실행한다.
+
+```jsx
+var App = App || {}
+
+App.ClickCounter = (_data) => {
+    if(!_data) throw Error('_data');
+    
+    const data = _data;
+
+    // data 전달에 관해서...
+    // 원시타입으로 전달할 경우 값복사  X
+    // 객체타입으로 전달해야 레퍼런스 타입으로 전달 가능.  => const data  data.value  
+
+    data.value = data.value || 0;
+
+    return {
+        getValue() {
+            return data.value;
+        },
+        count(){
+            data.value++;
+        },
+
+        setCountFn(fn){
+            // this.count 오버라이딩
+            this.count = () => (data.value = fn(data.value))
+            // 함수 체이닝을 위한 this 반환.
+            return this;
+        }
+    }
+}
+```
