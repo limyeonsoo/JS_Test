@@ -37,13 +37,13 @@ describe('App.ClickCountView', () => {
         // 테스트 더블 사용.
         // 사용 이유 실행이 되었는지 확인할 필요가 있음.
         it('increase 실행', () => {
-            spyOn(clickCounter, 'increase')
-            view.increaseAndUpdateView()
-            expect(clickCounter.increase).toHaveBeenCalled()
+            spyOn(clickCounter, 'count')
+            view.countAndUpdateView()
+            expect(clickCounter.count).toHaveBeenCalled()
         });
         it('upateView 실행', () => {
             spyOn(view, 'updateView')
-            view.increaseAndUpdateView()
+            view.countAndUpdateView()
             expect(view.updateView).toHaveBeenCalled();
         })
     })
@@ -51,13 +51,13 @@ describe('App.ClickCountView', () => {
     //Click Event 가 발생하면 increase and updateView 를 실행.
     it('Click Event 가 발생하면 increase and updateView 를 실행',()=>{
         // 준비 : 스파이 심기
-        spyOn(view, 'increaseAndUpdateView');
+        spyOn(view, 'countAndUpdateView');
 
         // click ??
         // 클릭 이벤트 핸들러를 바인딩할 돔 엘리먼트를 주입.
         triggerEl.click();
 
         // 단언
-        expect(view.increaseAndUpdateView).toHaveBeenCalled();
+        expect(view.countAndUpdateView).toHaveBeenCalled();
     })
 })

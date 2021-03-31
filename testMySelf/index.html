@@ -1,18 +1,28 @@
 <html>
     <body>
+        <button id="btn-decrease">Decrease</button>
         <span id="counter-display"></span>
         <button id="btn-increase">Increase</button>
+
 
         <script src="ClickCounter.js"></script>
         <script src="ClickCounterView.js"></script>
 
         <script>
             (() => {
-                const clickCounter = App.ClickCounter();
+                const data = { value : 0 };
+                const counterDsc = App.ClickCounter(data).setCountFn(v => v - 1);
+                const counterInc = App.ClickCounter(data).setCountFn(v => v + 1);
+                
                 const updateEl = document.getElementById('counter-display');
-                const triggerEl = document.getElementById('btn-increase');
-                const view = App.ClickCounterView(clickCounter, {updateEl, triggerEl});
-                view.updateView();
+    
+                const btnInc = document.getElementById('btn-increase');
+                const btnDsc = document.getElementById('btn-decrease');
+    
+                const dscCounterView = App.ClickCounterView(counterDsc, {updateEl, triggerEl : btnDsc});
+                const incCounterView = App.ClickCounterView(counterInc, {updateEl, triggerEl : btnInc});
+
+                incCounterView.updateView(); //둘중 하나
             })();
         </script>
     </body>

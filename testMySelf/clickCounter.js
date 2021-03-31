@@ -15,8 +15,15 @@ App.ClickCounter = (_data) => {
         getValue() {
             return data.value;
         },
-        increase(){
+        count(){
             data.value++;
+        },
+
+        setCountFn(fn){
+            // this.count 오버라이딩
+            this.count = () => (data.value = fn(data.value))
+            // 함수 체이닝을 위한 this 반환.
+            return this;
         }
     }
 }
