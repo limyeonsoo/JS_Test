@@ -1,0 +1,13 @@
+<html>
+    <body>
+        <span id="counter-display"></span>
+        <button onclick="counter++; countDisplay()">증가</button>
+        <script>
+            var counter = 0;
+            var el = document.getElementById('counter-display');
+            function countDisplay(){
+                el.innerHTML = counter;
+            };
+        </script>
+    </body>
+</html>

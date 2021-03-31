@@ -1,0 +1,19 @@
+<html>
+    <body>
+        <span id="counter-display"></span>
+        <button id="btn-increase">Increase</button>
+
+        <script src="ClickCounter.js"></script>
+        <script src="ClickCounterView.js"></script>
+
+        <script>
+            (() => {
+                const clickCounter = App.ClickCounter();
+                const updateEl = document.getElementById('counter-display');
+                const triggerEl = document.getElementById('btn-increase');
+                const view = App.ClickCounterView(clickCounter, {updateEl, triggerEl});
+                view.updateView();
+            })();
+        </script>
+    </body>
+</html>
