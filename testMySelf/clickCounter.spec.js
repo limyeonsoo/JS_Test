@@ -1,7 +1,8 @@
 describe('App.ClickCounter', () => {
-    let counter
+    let counter;
     beforeEach(() => {
-        counter = App.ClickCounter();
+        const data = { value : 0 };
+        counter = App.ClickCounter(data);
     })
     describe('getValue()', () => {
         it('초기값이 0인 카운터 값을 반환한다', () => {
@@ -20,5 +21,11 @@ describe('App.ClickCounter', () => {
             // 단언
             expect(counter.getValue()).toBe(initialValue+1);
         })
+    })
+
+    // 기능 추가 
+    it('데이터를 받지 못했을 때 에러', () => {
+        const actual = () => (counter = App.ClickCounter());
+        expect(actual).toThrowError();
     })
 })
